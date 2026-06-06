@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CctvController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
@@ -28,10 +29,11 @@ Route::middleware('auth.admin')->group(function () {
     // CCTV Devices — full resource
     Route::resource('cctv', CctvController::class);
 
+    // Guardians — full resource
+    Route::resource('guardians', GuardianController::class);
+
     // Placeholders — to be replaced as modules are built
     Route::get('/reports',  fn () => abort(404))->name('reports.index');
-    Route::get('/guardians',fn () => abort(404))->name('guardians.index');
-    Route::get('/guardians/create', fn () => abort(404))->name('guardians.create');
     Route::get('/alerts',   fn () => abort(404))->name('alerts.index');
 
 });
