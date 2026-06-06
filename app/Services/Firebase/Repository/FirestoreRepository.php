@@ -110,7 +110,26 @@ final class FirestoreRepository implements FireStore
         $this->db
             ->collection($collection)
             ->document($documentId)
-            ->set($data, ['merge' => true]);
+            ->set($data);
+
+        return $documentId;
+    }
+
+    // -------------------------------------------------------------------------
+    // Partial Update (patch individual fields without overwriting the document)
+    // -------------------------------------------------------------------------
+
+    public function patch(string $collection, string $documentId, array $fields): string
+    {
+        $fieldPaths = [];
+        foreach ($fields as $key => $value) {
+            $fieldPaths[] = ['path' => $key, 'value' => $value];
+        }
+
+        $this->db
+            ->collection($collection)
+            ->document($documentId)
+            ->update($fieldPaths);
 
         return $documentId;
     }

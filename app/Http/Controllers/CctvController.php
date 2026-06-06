@@ -81,7 +81,7 @@ class CctvController extends Controller
             $patients = $this->db->fetch('patients');
             $patient  = $patients->firstWhere('docID', $request->patientID);
             if ($patient) {
-                $this->db->edit('patients', $request->patientID, [
+                $this->db->patch('patients', $request->patientID, [
                     'deviceID' => $request->deviceID,
                 ]);
             }
@@ -156,7 +156,7 @@ class CctvController extends Controller
         // Clear deviceID from any patient previously linked to this device
         foreach ($patients as $p) {
             if (($p['deviceID'] ?? '') === $deviceID && $p['docID'] !== $request->patientID) {
-                $this->db->edit('patients', $p['docID'], ['deviceID' => '']);
+                $this->db->patch('patients', $p['docID'], ['deviceID' => '']);
             }
         }
 
@@ -164,7 +164,7 @@ class CctvController extends Controller
         if ($request->filled('patientID')) {
             $newPatient = $patients->firstWhere('docID', $request->patientID);
             if ($newPatient) {
-                $this->db->edit('patients', $request->patientID, ['deviceID' => $deviceID]);
+                $this->db->patch('patients', $request->patientID, ['deviceID' => $deviceID]);
             }
         }
 
@@ -186,7 +186,7 @@ class CctvController extends Controller
             $patients = $this->db->fetch('patients');
             foreach ($patients as $p) {
                 if (($p['deviceID'] ?? '') === $device['deviceID']) {
-                    $this->db->edit('patients', $p['docID'], ['deviceID' => '']);
+                    $this->db->patch('patients', $p['docID'], ['deviceID' => '']);
                 }
             }
         }
