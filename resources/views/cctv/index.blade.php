@@ -293,7 +293,7 @@
                             <tbody class="divide-y divide-gray-100" id="deviceTable">
                                 @forelse ($devices as $device)
                                     @php
-                                        $deviceID = $device['deviceID'] ?? '';
+                                        $deviceID = $device['docID'] ?? '';
                                         $ip = $device['ip'] ?? '';
                                         $username = $device['username'] ?? '';
                                         $password = $device['password'] ?? '';

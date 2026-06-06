@@ -23,6 +23,7 @@ class CctvController extends Controller
         $devices  = $this->db->fetch('devices');
         $patients = $this->db->fetch('patients');
 
+
         // Build a quick lookup: deviceID => patient fullName
         $patientMap = [];
         foreach ($patients as $p) {
