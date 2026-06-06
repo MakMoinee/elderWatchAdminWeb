@@ -178,8 +178,8 @@
                 </button>
 
                 <div class="hidden lg:block">
-                    <h1 class="text-sm font-semibold text-gray-900">Patient Management</h1>
-                    <p class="text-xs text-gray-400">Manage all registered patients</p>
+                    <h1 class="text-sm font-semibold text-gray-900">CCTV Devices Management</h1>
+                    <p class="text-xs text-gray-400">Manage all registered devices</p>
                 </div>
 
                 <div class="flex items-center gap-3">
