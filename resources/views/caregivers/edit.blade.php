@@ -51,12 +51,12 @@
 
         // $userID is passed from the controller — it is the Firestore docID
         // (the route key). Do NOT overwrite it here.
-        $cgFirst   = $caregiver['firstName']   ?? '';
-        $cgMiddle  = $caregiver['middleName']  ?? '';
-        $cgLast    = $caregiver['lastName']    ?? '';
-        $cgEmail   = $caregiver['email']       ?? '';
-        $cgPhone   = $caregiver['phoneNumber'] ?? '';
-        $cgAddress = $caregiver['address']     ?? '';
+        $cgFirst = $caregiver['firstName'] ?? '';
+        $cgMiddle = $caregiver['middleName'] ?? '';
+        $cgLast = $caregiver['lastName'] ?? '';
+        $cgEmail = $caregiver['email'] ?? '';
+        $cgPhone = $caregiver['phoneNumber'] ?? '';
+        $cgAddress = $caregiver['address'] ?? '';
         $cgFullName = trim("$cgFirst $cgLast");
 
         $navItems = [
@@ -183,7 +183,8 @@
             onclick="toggleSidebar()"></div>
 
         {{-- ===================== MAIN AREA ===================== --}}
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;"
+            id="mainAreaDiv">
 
             {{-- Top header --}}
             <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
@@ -497,23 +498,28 @@
     </form>
 
     <script>
-        (function () {
+        (function() {
             var sb = document.getElementById('sidebar'),
                 ov = document.getElementById('sidebar-overlay');
             if (!sb || !ov) return;
+
             function applyState(open) {
-                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
-                sb.style.translate  = open ? '0 0'              : '-100% 0';
-                ov.style.display   = open ? 'block'            : 'none';
+                sb.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
+                sb.style.translate = open ? '0 0' : '-100% 0';
+                ov.style.display = open ? 'block' : 'none';
                 sb.setAttribute('data-open', open ? '1' : '0');
             }
             if (window.innerWidth < 1024) applyState(false);
-            window.toggleSidebar = function () {
+            window.toggleSidebar = function() {
                 applyState(sb.getAttribute('data-open') !== '1');
+                document.getElementById('mainAreaDiv').setAttribute('style', 'margin-left:' + (sb.getAttribute(
+                    'data-open') === '1' ? '200px' : '0') + '; transition: margin-left 0.2s ease-in-out;');
             };
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) {
-                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                    sb.style.transform = '';
+                    sb.style.translate = '';
+                    ov.style.display = '';
                 } else if (sb.getAttribute('data-open') !== '1') {
                     applyState(false);
                 }

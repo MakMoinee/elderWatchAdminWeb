@@ -17,7 +17,8 @@
             background-color: #00c4c4 !important;
         }
 
-        .text-blue-700, .text-blue-600 {
+        .text-blue-700,
+        .text-blue-600 {
             color: #00c4c4 !important;
         }
     </style>
@@ -155,7 +156,8 @@
             onclick="toggleSidebar()"></div>
 
         {{-- ===================== MAIN AREA ===================== --}}
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" id="mainAreaDiv"
+            style="margin-left: 200px;">
 
             {{-- Top header --}}
             <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
@@ -191,7 +193,7 @@
             </header>
 
             {{-- ===================== CONTENT ===================== --}}
-            <main class="flex-1 overflow-y-auto p-6 space-y-6" style="margin-left:200px;">
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
 
                 {{-- Greeting banner --}}
                 <div class="bg-blue-600 rounded-2xl px-6 py-5 flex items-center justify-between">
@@ -527,23 +529,28 @@
     </div>{{-- /flex wrapper --}}
 
     <script>
-        (function () {
+        (function() {
             var sb = document.getElementById('sidebar'),
                 ov = document.getElementById('sidebar-overlay');
             if (!sb || !ov) return;
+
             function applyState(open) {
-                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
-                sb.style.translate  = open ? '0 0'              : '-100% 0';
-                ov.style.display   = open ? 'block'            : 'none';
+                sb.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
+                sb.style.translate = open ? '0 0' : '-100% 0';
+                ov.style.display = open ? 'block' : 'none';
                 sb.setAttribute('data-open', open ? '1' : '0');
             }
             if (window.innerWidth < 1024) applyState(false);
-            window.toggleSidebar = function () {
+            window.toggleSidebar = function() {
                 applyState(sb.getAttribute('data-open') !== '1');
+                document.getElementById('mainAreaDiv').setAttribute('style', 'margin-left:' + (sb.getAttribute(
+                    'data-open') === '1' ? '200px' : '0') + '; transition: margin-left 0.2s ease-in-out;');
             };
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) {
-                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                    sb.style.transform = '';
+                    sb.style.translate = '';
+                    ov.style.display = '';
                 } else if (sb.getAttribute('data-open') !== '1') {
                     applyState(false);
                 }

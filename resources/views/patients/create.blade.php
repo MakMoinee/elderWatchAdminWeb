@@ -173,7 +173,8 @@
             onclick="toggleSidebar()"></div>
 
         {{-- ===================== MAIN AREA ===================== --}}
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;"
+            id="mainAreaDiv">
 
             {{-- Top header --}}
             <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
@@ -369,6 +370,8 @@
             if (window.innerWidth < 1024) applyState(false);
             window.toggleSidebar = function() {
                 applyState(sb.getAttribute('data-open') !== '1');
+                document.getElementById('mainAreaDiv').setAttribute('style', 'margin-left:' + (sb.getAttribute(
+                    'data-open') === '1' ? '200px' : '0') + '; transition: margin-left 0.2s ease-in-out;');
             };
             window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) {

@@ -173,7 +173,8 @@
             onclick="toggleSidebar()"></div>
 
         {{-- ===================== MAIN AREA ===================== --}}
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;"
+            id="mainAreaDiv">
 
             {{-- Top header --}}
             <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
@@ -345,9 +346,12 @@
                                             <td class="px-6 py-4">
                                                 @php $assignedCaregiver = $patientCaregiverMap[$pDocId] ?? null; @endphp
                                                 @if ($assignedCaregiver)
-                                                    <span class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
-                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                    <span
+                                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                                                            stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                         </svg>
                                                         {{ $assignedCaregiver }}
                                                     </span>
@@ -428,23 +432,29 @@
     </form>
 
     <script>
-        (function () {
+        (function() {
             var sb = document.getElementById('sidebar'),
                 ov = document.getElementById('sidebar-overlay');
             if (!sb || !ov) return;
+
             function applyState(open) {
-                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
-                sb.style.translate  = open ? '0 0'              : '-100% 0';
-                ov.style.display   = open ? 'block'            : 'none';
+                sb.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
+                sb.style.translate = open ? '0 0' : '-100% 0';
+                ov.style.display = open ? 'block' : 'none';
                 sb.setAttribute('data-open', open ? '1' : '0');
             }
             if (window.innerWidth < 1024) applyState(false);
-            window.toggleSidebar = function () {
+            window.toggleSidebar = function() {
                 applyState(sb.getAttribute('data-open') !== '1');
+
+                document.getElementById('mainAreaDiv').setAttribute('style', 'margin-left:' + (sb.getAttribute(
+                    'data-open') === '1' ? '200px' : '0') + '; transition: margin-left 0.2s ease-in-out;');
             };
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) {
-                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                    sb.style.transform = '';
+                    sb.style.translate = '';
+                    ov.style.display = '';
                 } else if (sb.getAttribute('data-open') !== '1') {
                     applyState(false);
                 }
