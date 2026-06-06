@@ -423,9 +423,12 @@
             if (!sb || !ov) return;
 
             function applyState(open) {
+                sb.style.zIndex    = '9999';
+                ov.style.zIndex    = '9998';
+                ov.style.left      = '15rem';
                 sb.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
                 sb.style.translate = open ? '0 0' : '-100% 0';
-                ov.style.display = open ? 'block' : 'none';
+                ov.style.display   = open ? 'block' : 'none';
                 sb.setAttribute('data-open', open ? '1' : '0');
             }
             if (window.innerWidth < 1024) applyState(false);
