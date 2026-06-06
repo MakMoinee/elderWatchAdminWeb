@@ -171,7 +171,8 @@
 
             {{-- Top header --}}
             <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
-                <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-900 transition-colors">
+                <button id="btnMenu" type="button"
+                    class="lg:hidden text-gray-500 hover:text-gray-900 transition-colors">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -666,6 +667,31 @@
                 }
             });
         }
+
+        (function () {
+            var sb = document.getElementById('sidebar'),
+                ov = document.getElementById('sidebar-overlay');
+            if (!sb || !ov) return;
+            function applyState(open) {
+                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
+                sb.style.translate  = open ? '0 0'              : '-100% 0';
+                ov.style.display   = open ? 'block'            : 'none';
+                sb.setAttribute('data-open', open ? '1' : '0');
+            }
+            if (window.innerWidth < 1024) applyState(false);
+            window.toggleSidebar = function () {
+                applyState(sb.getAttribute('data-open') !== '1');
+            };
+            var btn = document.getElementById('btnMenu');
+            if (btn) btn.addEventListener('click', window.toggleSidebar);
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 1024) {
+                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                } else if (sb.getAttribute('data-open') !== '1') {
+                    applyState(false);
+                }
+            });
+        }());
     </script>
 
     @if (session('success'))

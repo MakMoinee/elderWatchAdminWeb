@@ -491,13 +491,28 @@
     </form>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const hidden = sidebar.classList.contains('-translate-x-full');
-            sidebar.classList.toggle('-translate-x-full', !hidden);
-            overlay.classList.toggle('hidden', !hidden);
-        }
+        (function () {
+            var sb = document.getElementById('sidebar'),
+                ov = document.getElementById('sidebar-overlay');
+            if (!sb || !ov) return;
+            function applyState(open) {
+                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
+                sb.style.translate  = open ? '0 0'              : '-100% 0';
+                ov.style.display   = open ? 'block'            : 'none';
+                sb.setAttribute('data-open', open ? '1' : '0');
+            }
+            if (window.innerWidth < 1024) applyState(false);
+            window.toggleSidebar = function () {
+                applyState(sb.getAttribute('data-open') !== '1');
+            };
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 1024) {
+                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                } else if (sb.getAttribute('data-open') !== '1') {
+                    applyState(false);
+                }
+            });
+        }());
 
         function togglePasswordSection() {
             const section = document.getElementById('passwordSection');

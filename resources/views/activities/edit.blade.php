@@ -82,7 +82,12 @@
 
     <div class="flex-1 flex flex-col min-h-screen lg:ml-60 overflow-hidden" style="margin-left:200px;">
         <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 shrink-0 z-20">
-            <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-900 transition-colors mr-3">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div class="flex items-center gap-3 flex-1">
                 <a href="{{ route('activities.index') }}" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -193,13 +198,28 @@
 </div>
 
 <script>
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const hidden  = sidebar.classList.contains('-translate-x-full');
-        sidebar.classList.toggle('-translate-x-full', !hidden);
-        overlay.classList.toggle('hidden', !hidden);
-    }
+    (function () {
+        var sb = document.getElementById('sidebar'),
+            ov = document.getElementById('sidebar-overlay');
+        if (!sb || !ov) return;
+        function applyState(open) {
+            sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
+            sb.style.translate  = open ? '0 0'              : '-100% 0';
+            ov.style.display   = open ? 'block'            : 'none';
+            sb.setAttribute('data-open', open ? '1' : '0');
+        }
+        if (window.innerWidth < 1024) applyState(false);
+        window.toggleSidebar = function () {
+            applyState(sb.getAttribute('data-open') !== '1');
+        };
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 1024) {
+                sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+            } else if (sb.getAttribute('data-open') !== '1') {
+                applyState(false);
+            }
+        });
+    }());
 </script>
 </body>
 </html>

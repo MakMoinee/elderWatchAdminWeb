@@ -422,6 +422,29 @@
         document.querySelector('[name=ip]').addEventListener('input', updateRtspPreview);
         document.querySelector('[name=username]').addEventListener('input', updateRtspPreview);
         document.querySelector('[name=password]').addEventListener('input', updateRtspPreview);
+
+        (function () {
+            var sb = document.getElementById('sidebar'),
+                ov = document.getElementById('sidebar-overlay');
+            if (!sb || !ov) return;
+            function applyState(open) {
+                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
+                sb.style.translate  = open ? '0 0'              : '-100% 0';
+                ov.style.display   = open ? 'block'            : 'none';
+                sb.setAttribute('data-open', open ? '1' : '0');
+            }
+            if (window.innerWidth < 1024) applyState(false);
+            window.toggleSidebar = function () {
+                applyState(sb.getAttribute('data-open') !== '1');
+            };
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 1024) {
+                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                } else if (sb.getAttribute('data-open') !== '1') {
+                    applyState(false);
+                }
+            });
+        }());
     </script>
 
     @if (session('success'))
