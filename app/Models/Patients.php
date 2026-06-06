@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Users extends Model
+class Patients extends Model
 {
     use HasFactory;
 
-    protected $id = 'userID';
+    protected $id = 'patientID';
 
     protected $fillable = [
-        'userID',
-        'email',
+        'patientID',
+        'birthDate',
         'firstName',
+        'fullName',
         'middleName',
         'lastName',
         'address',
-        'password',
-        'phoneNumber',
-        'registeredDate',
-        'userType',
+        'deviceID',
     ];
 }
