@@ -181,7 +181,7 @@
             </header>
 
             {{-- ===================== CONTENT ===================== --}}
-            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+            <main class="flex-1 overflow-y-auto p-6 space-y-6" style="margin-left:200px;">
 
                 {{-- Greeting banner --}}
                 <div class="bg-blue-600 rounded-2xl px-6 py-5 flex items-center justify-between">
@@ -526,7 +526,7 @@
         }
     </script>
 
-     @if (session()->pull('successLogin'))
+    @if (session()->pull('successLogin'))
         <script>
             setTimeout(() => {
                 Swal.fire({
