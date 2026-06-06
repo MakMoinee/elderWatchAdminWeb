@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Caregivers — ElderWatch</title>
+    <title>Patients — ElderWatch</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -178,8 +178,8 @@
                 </button>
 
                 <div class="hidden lg:block">
-                    <h1 class="text-sm font-semibold text-gray-900">Caregiver Management</h1>
-                    <p class="text-xs text-gray-400">Manage all registered caregiver accounts</p>
+                    <h1 class="text-sm font-semibold text-gray-900">Patient Management</h1>
+                    <p class="text-xs text-gray-400">Manage all registered patients</p>
                 </div>
 
                 <div class="flex items-center gap-3">
