@@ -94,6 +94,12 @@
                     'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
             ],
             [
+                'label' => 'Activities',
+                'route' => 'activities.index',
+                'active' => false,
+                'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+            ],
+            [
                 'label' => 'CCTV Devices',
                 'route' => 'cctv.index',
                 'active' => false,
@@ -187,7 +193,7 @@
                 </button>
 
                 <div class="hidden lg:block">
-                     <h1 class="text-sm font-semibold text-gray-900">Patient Management</h1>
+                    <h1 class="text-sm font-semibold text-gray-900">Patient Management</h1>
                     <p class="text-xs text-gray-400">Manage all registered patients</p>
                 </div>
 
@@ -383,23 +389,26 @@
     </div>
 
     <script>
-        (function () {
+        (function() {
             var sb = document.getElementById('sidebar'),
                 ov = document.getElementById('sidebar-overlay');
             if (!sb || !ov) return;
+
             function applyState(open) {
-                sb.style.transform = open ? 'translateX(0)'    : 'translateX(-100%)';
-                sb.style.translate  = open ? '0 0'              : '-100% 0';
-                ov.style.display   = open ? 'block'            : 'none';
+                sb.style.transform = open ? 'translateX(0)' : 'translateX(-100%)';
+                sb.style.translate = open ? '0 0' : '-100% 0';
+                ov.style.display = open ? 'block' : 'none';
                 sb.setAttribute('data-open', open ? '1' : '0');
             }
             if (window.innerWidth < 1024) applyState(false);
-            window.toggleSidebar = function () {
+            window.toggleSidebar = function() {
                 applyState(sb.getAttribute('data-open') !== '1');
             };
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (window.innerWidth >= 1024) {
-                    sb.style.transform = ''; sb.style.translate = ''; ov.style.display = '';
+                    sb.style.transform = '';
+                    sb.style.translate = '';
+                    ov.style.display = '';
                 } else if (sb.getAttribute('data-open') !== '1') {
                     applyState(false);
                 }
