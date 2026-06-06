@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -8,8 +9,8 @@ Route::get('/', function () {
 });
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/login', [LoginController::class, 'store']);
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes (dashboard and beyond) go here later
 Route::middleware('auth.admin')->group(function () {
