@@ -110,7 +110,7 @@ final class FirestoreRepository implements FireStore
         $this->db
             ->collection($collection)
             ->document($documentId)
-            ->set($data);
+            ->set($data, ['merge' => true]);
 
         return $documentId;
     }
