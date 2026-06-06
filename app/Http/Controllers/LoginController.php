@@ -46,7 +46,6 @@ class LoginController extends Controller
             }
             if (count($data) > 0) {
                 $users = $data[0];
-                dd($users->toArray());
                 if ($users->userType == 2) {
                     session()->put('errorLoginUnauthorized', true);
                     return redirect('/login');
