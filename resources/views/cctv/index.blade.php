@@ -267,7 +267,7 @@
                     <div
                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100">
                         <div class="relative w-full sm:w-72">
-                            <input id="searchInput" type="text" placeholder="Search device or patient…"
+                            <input id="searchInput" type="text" placeholder="Search device or caregiver…"
                                 class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg
                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                         </div>
@@ -293,7 +293,7 @@
                                     <th class="px-5 py-3 text-left font-medium">Device</th>
                                     <th class="px-5 py-3 text-left font-medium">IP Address</th>
                                     <th class="px-5 py-3 text-left font-medium">Status</th>
-                                    <th class="px-5 py-3 text-left font-medium">Linked Patient</th>
+                                    <th class="px-5 py-3 text-left font-medium">Linked Caregiver</th>
                                     <th class="px-5 py-3 text-left font-medium">RTSP Stream</th>
                                     <th class="px-5 py-3 text-center font-medium">Actions</th>
                                 </tr>
@@ -301,14 +301,14 @@
                             <tbody class="divide-y divide-gray-100" id="deviceTable">
                                 @forelse ($devices as $device)
                                     @php
-                                        $deviceID = $device['docID'] ?? '';
+                                        $deviceID = $device['deviceID'] ?? $device['docID'] ?? '';
                                         $ip = $device['ip'] ?? '';
                                         $username = $device['username'] ?? '';
                                         $password = $device['password'] ?? '';
                                         $status = strtolower($device['status'] ?? 'offline');
                                         $docID = $device['docID'] ?? '';
                                         $rtspUrl = "rtsp://{$username}:{$password}@{$ip}/stream";
-                                        $linkedName = $patientMap[$deviceID] ?? null;
+                                        $linkedName = !empty($device['userID']) ? ($caregiverMap[$device['userID']] ?? null) : null;
                                     @endphp
                                     <tr class="hover:bg-gray-50 transition-colors device-row"
                                         data-search="{{ strtolower($deviceID . ' ' . $ip . ' ' . ($linkedName ?? '')) }}"
@@ -354,7 +354,7 @@
                                             @endif
                                         </td>
 
-                                        {{-- Linked patient --}}
+                                        {{-- Linked caregiver --}}
                                         <td class="px-5 py-3">
                                             @if ($linkedName)
                                                 <span
@@ -658,7 +658,7 @@
         function confirmDelete(docID, deviceLabel) {
             Swal.fire({
                 title: 'Delete Device?',
-                html: `<span class="text-gray-600">Device <strong>${deviceLabel}</strong> and its patient link will be removed.</span>`,
+                html: `<span class="text-gray-600">Device <strong>${deviceLabel}</strong> and its caregiver link will be removed.</span>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',

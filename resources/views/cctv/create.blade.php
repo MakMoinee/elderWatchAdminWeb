@@ -338,7 +338,7 @@
                         </div>
                     </div>
 
-                    {{-- ── Patient Linking ── --}}
+                    {{-- ── Caregiver Linking ── --}}
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
                         style="margin-top: 10px;">
                         <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
@@ -350,30 +350,32 @@
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-sm font-semibold text-gray-900">Link to Patient</h2>
-                                <p class="text-xs text-gray-500">Optional — assigns this camera to monitor a patient
-                                </p>
+                                <h2 class="text-sm font-semibold text-gray-900">Link to Caregiver</h2>
+                                <p class="text-xs text-gray-500">Optional — assigns this camera to a caregiver</p>
                             </div>
                         </div>
 
                         <div class="px-6 py-5">
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Patient</label>
-                            <select name="patientID"
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Caregiver</label>
+                            <select name="caregiverID"
                                 class="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg
                                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">— No patient assigned —</option>
-                                @foreach ($patients as $patient)
-                                    <option value="{{ $patient['docID'] }}"
-                                        {{ old('patientID') === $patient['docID'] ? 'selected' : '' }}>
-                                        {{ $patient['fullName'] ?? 'Unknown' }}
-                                        @if (!empty($patient['deviceID']))
-                                            (has device: {{ $patient['deviceID'] }})
+                                <option value="">— No caregiver assigned —</option>
+                                @foreach ($caregivers as $caregiver)
+                                    @php
+                                        $cgName = trim(($caregiver['firstName'] ?? '') . ' ' . ($caregiver['lastName'] ?? '')) ?: 'Unknown';
+                                    @endphp
+                                    <option value="{{ $caregiver['docID'] }}"
+                                        {{ old('caregiverID') === $caregiver['docID'] ? 'selected' : '' }}>
+                                        {{ $cgName }}
+                                        @if (!empty($caregiver['deviceID']))
+                                            (has device: {{ $caregiver['deviceID'] }})
                                         @endif
                                     </option>
                                 @endforeach
                             </select>
                             <p class="text-xs text-gray-400 mt-1.5">
-                                Selecting a patient will update their Device ID automatically.
+                                Selecting a caregiver will update their Device ID automatically.
                             </p>
                         </div>
                     </div>

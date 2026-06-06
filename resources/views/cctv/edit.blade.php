@@ -387,7 +387,7 @@
                             </div>
                         </div>
 
-                        {{-- ── Patient Linking ── --}}
+                        {{-- ── Caregiver Linking ── --}}
                         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                             <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -398,50 +398,50 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h2 class="text-sm font-semibold text-gray-900">Linked Patient</h2>
-                                    <p class="text-xs text-gray-500">Reassign or remove patient monitoring</p>
+                                    <h2 class="text-sm font-semibold text-gray-900">Linked Caregiver</h2>
+                                    <p class="text-xs text-gray-500">Reassign or remove caregiver assignment</p>
                                 </div>
                             </div>
 
                             <div class="px-6 py-5">
-                                @if ($linkedPatient)
+                                @if ($linkedCaregiver)
+                                    @php
+                                        $linkedCgName = trim(($linkedCaregiver['firstName'] ?? '') . ' ' . ($linkedCaregiver['lastName'] ?? '')) ?: 'Unknown';
+                                    @endphp
                                     <div
                                         class="flex items-center gap-3 mb-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
                                         <div
                                             class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                                            {{ strtoupper(substr($linkedPatient['fullName'] ?? 'P', 0, 1)) }}
+                                            {{ strtoupper(substr($linkedCgName, 0, 1)) }}
                                         </div>
                                         <div>
-                                            <p class="text-sm font-medium text-blue-900">
-                                                {{ $linkedPatient['fullName'] ?? 'Unknown' }}</p>
+                                            <p class="text-sm font-medium text-blue-900">{{ $linkedCgName }}</p>
                                             <p class="text-xs text-blue-600">Currently linked to this device</p>
                                         </div>
                                     </div>
                                 @endif
 
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Patient</label>
-                                <select name="patientID"
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Caregiver</label>
+                                <select name="caregiverID"
                                     class="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg
                                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option value="">— No patient assigned —</option>
-                                    @foreach ($patients as $patient)
+                                    <option value="">— No caregiver assigned —</option>
+                                    @foreach ($caregivers as $caregiver)
                                         @php
-                                            $isLinked =
-                                                $linkedPatient && ($linkedPatient['docID'] ?? '') === $patient['docID'];
-                                            $selected =
-                                                old('patientID', $isLinked ? $patient['docID'] : '') ===
-                                                $patient['docID'];
+                                            $cgName  = trim(($caregiver['firstName'] ?? '') . ' ' . ($caregiver['lastName'] ?? '')) ?: 'Unknown';
+                                            $isLinked = $linkedCaregiver && ($linkedCaregiver['docID'] ?? '') === $caregiver['docID'];
+                                            $selected = old('caregiverID', $isLinked ? $caregiver['docID'] : '') === $caregiver['docID'];
                                         @endphp
-                                        <option value="{{ $patient['docID'] }}" {{ $selected ? 'selected' : '' }}>
-                                            {{ $patient['fullName'] ?? 'Unknown' }}
-                                            @if (!empty($patient['deviceID']) && $patient['deviceID'] !== $deviceID)
-                                                (has device: {{ $patient['deviceID'] }})
+                                        <option value="{{ $caregiver['docID'] }}" {{ $selected ? 'selected' : '' }}>
+                                            {{ $cgName }}
+                                            @if (!empty($caregiver['deviceID']) && $caregiver['deviceID'] !== $deviceID)
+                                                (has device: {{ $caregiver['deviceID'] }})
                                             @endif
                                         </option>
                                     @endforeach
                                 </select>
                                 <p class="text-xs text-gray-400 mt-1.5">
-                                    Changing the patient will automatically update their Device ID in the system.
+                                    Changing the caregiver will automatically update their Device ID in the system.
                                 </p>
                             </div>
                         </div>
