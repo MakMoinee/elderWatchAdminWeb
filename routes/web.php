@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CctvController;
@@ -32,8 +34,13 @@ Route::middleware('auth.admin')->group(function () {
     // Guardians — full resource
     Route::resource('guardians', GuardianController::class);
 
+    // Activity schedule — full resource
+    Route::resource('activities', ActivityController::class);
+
+    // Alerts — read-only (system-generated from activity_history)
+    Route::get('/alerts', [AlertController::class, 'index'])->name('alerts.index');
+
     // Placeholders — to be replaced as modules are built
     Route::get('/reports',  fn () => abort(404))->name('reports.index');
-    Route::get('/alerts',   fn () => abort(404))->name('alerts.index');
 
 });

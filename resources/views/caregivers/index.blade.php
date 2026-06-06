@@ -85,6 +85,12 @@
                     'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
             ],
             [
+                'label' => 'Schedule',
+                'route' => 'activities.index',
+                'active' => false,
+                'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+            ],
+            [
                 'label' => 'CCTV Devices',
                 'route' => 'cctv.index',
                 'active' => false,
@@ -250,6 +256,9 @@
                                             class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
                                             Registered</th>
                                         <th
+                                            class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
+                                            Patients</th>
+                                        <th
                                             class="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
                                             Actions</th>
                                     </tr>
@@ -306,6 +315,27 @@
                                             {{-- Registered Date --}}
                                             <td class="px-6 py-4 text-gray-500 text-xs">
                                                 {{ $regDate ? \Carbon\Carbon::parse($regDate)->format('M d, Y') : '—' }}
+                                            </td>
+
+                                            {{-- Assigned Patients --}}
+                                            <td class="px-6 py-4">
+                                                @php $assignedPatients = $caregiverPatientMap[$docId] ?? []; @endphp
+                                                @if (count($assignedPatients) > 0)
+                                                    <div class="flex flex-wrap gap-1">
+                                                        @foreach (array_slice($assignedPatients, 0, 2) as $pName)
+                                                            <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-red-50 text-red-600">
+                                                                {{ $pName }}
+                                                            </span>
+                                                        @endforeach
+                                                        @if (count($assignedPatients) > 2)
+                                                            <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                                                                +{{ count($assignedPatients) - 2 }} more
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <span class="text-xs text-gray-400">None assigned</span>
+                                                @endif
                                             </td>
 
                                             {{-- Actions --}}

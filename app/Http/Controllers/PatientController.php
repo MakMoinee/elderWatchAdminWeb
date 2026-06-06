@@ -20,11 +20,30 @@ class PatientController extends Controller
 
     public function index()
     {
-        $patients = $this->db->fetch('patients');
+        $patients   = $this->db->fetch('patients');
+        $activities = $this->db->fetch('activity');
+        $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
+
+        // Build caregiver docID -> full name
+        $caregiverNames = [];
+        foreach ($caregivers as $c) {
+            $caregiverNames[$c['docID']] = trim(($c['firstName'] ?? '') . ' ' . ($c['lastName'] ?? ''));
+        }
+
+        // Build patientDocID -> caregiver full name (latest activity wins)
+        $patientCaregiverMap = [];
+        foreach ($activities as $a) {
+            $pid = $a['patientID']   ?? '';
+            $cid = $a['caregiverID'] ?? '';
+            if ($pid && $cid && isset($caregiverNames[$cid])) {
+                $patientCaregiverMap[$pid] = $caregiverNames[$cid];
+            }
+        }
 
         return view('patients.index', [
-            'patients'      => $patients->toArray(),
-            'totalPatients' => $patients->count(),
+            'patients'            => $patients->toArray(),
+            'totalPatients'       => $patients->count(),
+            'patientCaregiverMap' => $patientCaregiverMap,
         ]);
     }
 

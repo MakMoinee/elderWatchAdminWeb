@@ -22,10 +22,32 @@ class CaregiverController extends Controller
     public function index()
     {
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
+        $activities = $this->db->fetch('activity');
+        $patients   = $this->db->fetch('patients');
+
+        // Build patient docID -> full name
+        $patientNames = [];
+        foreach ($patients as $p) {
+            $patientNames[$p['docID']] = $p['fullName'] ?? trim(($p['firstName'] ?? '') . ' ' . ($p['lastName'] ?? ''));
+        }
+
+        // Build caregiverDocID -> [patient names] (unique)
+        $caregiverPatientMap = [];
+        foreach ($activities as $a) {
+            $cid = $a['caregiverID'] ?? '';
+            $pid = $a['patientID']   ?? '';
+            if ($cid && $pid && isset($patientNames[$pid])) {
+                $caregiverPatientMap[$cid][] = $patientNames[$pid];
+            }
+        }
+        foreach ($caregiverPatientMap as $cid => $names) {
+            $caregiverPatientMap[$cid] = array_unique($names);
+        }
 
         return view('caregivers.index', [
-            'caregivers' => $caregivers,
-            'totalCaregivers' => count($caregivers),
+            'caregivers'          => $caregivers,
+            'totalCaregivers'     => count($caregivers),
+            'caregiverPatientMap' => $caregiverPatientMap,
         ]);
     }
 

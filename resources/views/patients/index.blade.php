@@ -85,6 +85,12 @@
                     'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
             ],
             [
+                'label' => 'Schedule',
+                'route' => 'activities.index',
+                'active' => false,
+                'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+            ],
+            [
                 'label' => 'CCTV Devices',
                 'route' => 'cctv.index',
                 'active' => false,
@@ -253,6 +259,9 @@
                                             class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
                                             Device ID</th>
                                         <th
+                                            class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
+                                            Caregiver</th>
+                                        <th
                                             class="text-right text-xs font-semibold text-gray-500 uppercase tracking-wide px-6 py-3">
                                             Actions</th>
                                     </tr>
@@ -329,6 +338,21 @@
                                                     </span>
                                                 @else
                                                     <span class="text-xs text-gray-400">No device</span>
+                                                @endif
+                                            </td>
+
+                                            {{-- Assigned Caregiver --}}
+                                            <td class="px-6 py-4">
+                                                @php $assignedCaregiver = $patientCaregiverMap[$pDocId] ?? null; @endphp
+                                                @if ($assignedCaregiver)
+                                                    <span class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                        {{ $assignedCaregiver }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-xs text-gray-400">Unassigned</span>
                                                 @endif
                                             </td>
 
