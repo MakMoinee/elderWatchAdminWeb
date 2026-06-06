@@ -11,6 +11,17 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .bg-blue-600 {
+            background-color: #00c4c4 !important;
+        }
+
+        .text-blue-700,
+        .text-blue-600 {
+            color: #00c4c4 !important;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">

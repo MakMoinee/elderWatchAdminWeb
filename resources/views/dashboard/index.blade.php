@@ -11,6 +11,16 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .bg-blue-600 {
+            background-color: #00c4c4 !important;
+        }
+
+        .text-blue-700, .text-blue-600 {
+            color: #00c4c4 !important;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50 antialiased" style="font-family: 'Instrument Sans', sans-serif;">
@@ -150,12 +160,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-
-                {{-- Page title --}}
-                <div class="hidden lg:block">
-                    <h1 class="text-sm font-semibold text-gray-900">Overview</h1>
-                    <p class="text-xs text-gray-400">Welcome back, {{ $firstName }}</p>
-                </div>
 
                 {{-- Right actions --}}
                 <div class="flex items-center gap-3">
