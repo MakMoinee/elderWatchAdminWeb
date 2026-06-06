@@ -38,6 +38,10 @@
         .border-blue-600 {
             border-color: #00c4c4 !important;
         }
+
+        input {
+            padding: 5px;
+        }
     </style>
 </head>
 
@@ -225,7 +229,7 @@
                             <h2 class="text-sm font-semibold text-gray-900">Device Information</h2>
                         </div>
 
-                        <div class="px-6 py-5 space-y-4">
+                        <div class="px-6 py-5 space-y-4" style="margin-top: 10px;">
                             {{-- Device ID --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1.5">
@@ -242,7 +246,7 @@
                             </div>
 
                             {{-- IP + Status row --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="margin-top: 10px;">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
                                         IP Address <span class="text-red-500">*</span>
@@ -276,7 +280,7 @@
                             </div>
 
                             {{-- Username + Password row --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="margin-top: 10px;">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
                                         Username <span class="text-red-500">*</span>
@@ -318,7 +322,7 @@
                             </div>
 
                             {{-- RTSP Preview --}}
-                            <div class="bg-gray-900 rounded-lg px-4 py-3">
+                            <div class="bg-gray-900 rounded-lg px-4 py-3" style="margin-top: 10px;">
                                 <p class="text-xs text-gray-400 mb-1">RTSP Stream URL Preview</p>
                                 <code id="rtspPreview" class="text-xs text-green-400 font-mono break-all">
                                     rtsp://username:password@ip/stream
@@ -328,7 +332,8 @@
                     </div>
 
                     {{-- ── Patient Linking ── --}}
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                        style="margin-top: 10px;">
                         <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor"
@@ -367,7 +372,7 @@
                     </div>
 
                     {{-- Actions --}}
-                    <div class="flex items-center justify-end gap-3">
+                    <div class="flex items-center justify-end gap-3" style="margin-top: 10px;">
                         <a href="{{ route('cctv.index') }}"
                             class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300
                           rounded-lg hover:bg-gray-50 transition-colors">
