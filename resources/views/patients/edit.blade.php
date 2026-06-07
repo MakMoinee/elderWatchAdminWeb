@@ -55,7 +55,11 @@
         $pFullName = $patient['fullName'] ?? trim("$pFirst $pLast");
         $pBirth = $patient['birthDate'] ?? '';
         $pAddress = $patient['address'] ?? '';
-        $pDevice = $patient['deviceID'] ?? '';
+        $rawDevice = $patient['deviceID'] ?? [];
+        $pDevices = is_array($rawDevice)
+            ? array_values(array_filter($rawDevice))
+            : (($rawDevice !== '' && $rawDevice !== null) ? [$rawDevice] : []);
+        $pDevice = implode(', ', $pDevices); // for display only
         // $patientID is the Firestore docID passed from the controller — do not overwrite it
 
         $navItems = [
@@ -346,23 +350,51 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1.5">
-                                        CCTV Device ID
-                                        <span class="text-gray-400 font-normal">(optional)</span>
+                                        CCTV Device IDs
+                                        <span class="text-gray-400 font-normal">(optional — one per row)</span>
                                     </label>
-                                    <div class="relative">
-                                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                            stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15 10l4.553-2.069A1 1 0 0121 8.869v6.263a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
-                                        </svg>
-                                        <input type="text" name="deviceID"
-                                            value="{{ old('deviceID', $pDevice) }}" placeholder="e.g. CAM-001"
-                                            class="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50
-                                               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                                    <div id="deviceList" class="space-y-2">
+                                        @php
+                                            $editDevices = old('deviceID', $pDevices);
+                                            if (!is_array($editDevices)) $editDevices = [$editDevices];
+                                            if (empty($editDevices)) $editDevices = [''];
+                                        @endphp
+                                        @foreach ($editDevices as $did)
+                                            <div class="flex items-center gap-2 device-row">
+                                                <div class="relative flex-1">
+                                                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                        stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M15 10l4.553-2.069A1 1 0 0121 8.869v6.263a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                                                    </svg>
+                                                    <input type="text" name="deviceID[]"
+                                                        value="{{ $did }}"
+                                                        placeholder="e.g. CAM-001"
+                                                        class="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50
+                                                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                                                </div>
+                                                <button type="button" onclick="removeDeviceRow(this)"
+                                                    class="remove-btn text-gray-300 hover:text-red-500 transition-colors {{ count($editDevices) === 1 ? 'hidden' : '' }}">
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Link this patient to a registered CCTV
-                                        device.</p>
+                                    <button type="button" onclick="addDeviceRow()"
+                                        class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                            stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Add another device
+                                    </button>
+                                    <p class="text-xs text-gray-400 mt-1">Assign one or more registered CCTV devices to this patient.</p>
                                 </div>
                             </div>
                         </div>
@@ -391,6 +423,41 @@
     </div>
 
     <script>
+        // ── Dynamic device ID rows ───────────────────────────────────────────────────
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('#deviceList .device-row');
+            rows.forEach(row => {
+                row.querySelector('.remove-btn').classList.toggle('hidden', rows.length === 1);
+            });
+        }
+
+        function addDeviceRow() {
+            const list = document.getElementById('deviceList');
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 device-row';
+            row.innerHTML = `
+                <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.869v6.263a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+                    </svg>
+                    <input type="text" name="deviceID[]" placeholder="e.g. CAM-002"
+                        class="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+                </div>
+                <button type="button" onclick="removeDeviceRow(this)" class="remove-btn text-gray-300 hover:text-red-500 transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>`;
+            list.appendChild(row);
+            updateRemoveButtons();
+            row.querySelector('input').focus();
+        }
+
+        function removeDeviceRow(btn) {
+            btn.closest('.device-row').remove();
+            updateRemoveButtons();
+        }
+
         (function() {
             var sb = document.getElementById('sidebar'),
                 ov = document.getElementById('sidebar-overlay');

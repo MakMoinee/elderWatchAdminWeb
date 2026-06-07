@@ -68,7 +68,8 @@ class PatientController extends Controller
             'lastName'   => 'required|string|max:100',
             'birthDate'  => 'required|date',
             'address'    => 'nullable|string|max:255',
-            'deviceID'   => 'nullable|string|max:100',
+            'deviceID'   => 'nullable|array',
+            'deviceID.*' => 'nullable|string|max:100',
         ]);
 
         $fullName = trim(
@@ -77,6 +78,12 @@ class PatientController extends Controller
             $request->lastName
         );
 
+        // Collect device IDs, strip blanks, re-index
+        $deviceIDs = array_values(array_filter(
+            array_map('trim', $request->input('deviceID', [])),
+            fn($v) => $v !== ''
+        ));
+
         $this->db->create('patients', [
             'firstName'  => $request->firstName,
             'middleName' => $request->middleName ?? '',
@@ -84,7 +91,7 @@ class PatientController extends Controller
             'fullName'   => $fullName,
             'birthDate'  => $request->birthDate,
             'address'    => $request->address ?? '',
-            'deviceID'   => $request->deviceID ?? '',
+            'deviceID'   => $deviceIDs,
         ]);
 
         return redirect()->route('patients.index')
@@ -122,7 +129,8 @@ class PatientController extends Controller
             'lastName'   => 'required|string|max:100',
             'birthDate'  => 'required|date',
             'address'    => 'nullable|string|max:255',
-            'deviceID'   => 'nullable|string|max:100',
+            'deviceID'   => 'nullable|array',
+            'deviceID.*' => 'nullable|string|max:100',
         ]);
 
         $fullName = trim(
@@ -131,6 +139,12 @@ class PatientController extends Controller
             $request->lastName
         );
 
+        // Collect device IDs, strip blanks, re-index
+        $deviceIDs = array_values(array_filter(
+            array_map('trim', $request->input('deviceID', [])),
+            fn($v) => $v !== ''
+        ));
+
         $this->db->edit('patients', $id, [
             'firstName'  => $request->firstName,
             'middleName' => $request->middleName ?? '',
@@ -138,7 +152,7 @@ class PatientController extends Controller
             'fullName'   => $fullName,
             'birthDate'  => $request->birthDate,
             'address'    => $request->address ?? '',
-            'deviceID'   => $request->deviceID ?? '',
+            'deviceID'   => $deviceIDs,
         ]);
 
         return redirect()->route('patients.index')

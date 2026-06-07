@@ -279,7 +279,11 @@
                                             $pBirth = $patient['birthDate'] ?? null;
                                             $pAge = $pBirth ? \Carbon\Carbon::parse($pBirth)->age : '—';
                                             $pAddress = $patient['address'] ?? '—';
-                                            $pDevice = $patient['deviceID'] ?? '—';
+                                            $rawDevice = $patient['deviceID'] ?? [];
+                                            $pDevices = is_array($rawDevice)
+                                                ? array_values(array_filter($rawDevice))
+                                                : (($rawDevice !== '' && $rawDevice !== null) ? [$rawDevice] : []);
+                                            $pDevice = count($pDevices) ? implode(' ', $pDevices) : '—';
                                             $pDocId = $patient['docID'] ?? '';
                                         @endphp
                                         <tr class="hover:bg-gray-50/50 transition-colors patient-row"
@@ -325,18 +329,24 @@
                                                 {{ $pAddress }}
                                             </td>
 
-                                            {{-- Device ID --}}
+                                            {{-- Device IDs --}}
                                             <td class="px-6 py-4">
-                                                @if ($pDevice !== '—')
-                                                    <span
-                                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-700">
-                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
-                                                            stroke="currentColor" stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M15 10l4.553-2.069A1 1 0 0121 8.869v6.263a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
-                                                        </svg>
-                                                        {{ $pDevice }}
-                                                    </span>
+                                                @if (count($pDevices))
+                                                    <div class="flex flex-wrap gap-1">
+                                                        @foreach ($pDevices as $did)
+                                                            <span
+                                                                class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-50 text-yellow-700">
+                                                                <svg class="w-3 h-3 shrink-0" fill="none"
+                                                                    viewBox="0 0 24 24" stroke="currentColor"
+                                                                    stroke-width="2">
+                                                                    <path stroke-linecap="round"
+                                                                        stroke-linejoin="round"
+                                                                        d="M15 10l4.553-2.069A1 1 0 0121 8.869v6.263a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                                                                </svg>
+                                                                {{ $did }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
                                                 @else
                                                     <span class="text-xs text-gray-400">No device</span>
                                                 @endif
