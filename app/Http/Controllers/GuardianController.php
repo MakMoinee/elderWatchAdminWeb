@@ -21,10 +21,23 @@ class GuardianController extends Controller
 
     public function index()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         $guardians = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 3);
 
         return view('guardians.index', [
-            'guardians'      => $guardians,
+            'guardians' => $guardians,
             'totalGuardians' => count($guardians),
         ]);
     }
@@ -45,29 +58,29 @@ class GuardianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'firstName'   => 'required|string|max:100',
-            'middleName'  => 'nullable|string|max:100',
-            'lastName'    => 'required|string|max:100',
-            'email'       => 'required|email|max:200',
-            'password'    => 'required|string|min:6|confirmed',
+            'firstName' => 'required|string|max:100',
+            'middleName' => 'nullable|string|max:100',
+            'lastName' => 'required|string|max:100',
+            'email' => 'required|email|max:200',
+            'password' => 'required|string|min:6|confirmed',
             'phoneNumber' => 'nullable|string|max:30',
-            'address'     => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
         ]);
 
         $this->db->create('users', [
-            'firstName'      => $request->firstName,
-            'middleName'     => $request->middleName ?? '',
-            'lastName'       => $request->lastName,
-            'email'          => $request->email,
-            'password'       => Hash::make($request->password),
-            'phoneNumber'    => $request->phoneNumber ?? '',
-            'address'        => $request->address ?? '',
-            'userType'       => 3,
+            'firstName' => $request->firstName,
+            'middleName' => $request->middleName ?? '',
+            'lastName' => $request->lastName,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phoneNumber' => $request->phoneNumber ?? '',
+            'address' => $request->address ?? '',
+            'userType' => 3,
             'registeredDate' => now()->toDateString(),
         ]);
 
         return redirect()->route('guardians.index')
-                         ->with('success', 'Guardian added successfully.');
+            ->with('success', 'Guardian added successfully.');
     }
 
     // -------------------------------------------------------------------------
@@ -76,7 +89,7 @@ class GuardianController extends Controller
 
     public function edit(string $id)
     {
-        $all      = $this->db->fetch('users');
+        $all = $this->db->fetch('users');
         $existing = $all->firstWhere('docID', $id);
 
         if (! $existing) {
@@ -85,7 +98,7 @@ class GuardianController extends Controller
 
         return view('guardians.edit', [
             'guardian' => $existing,
-            'userID'   => $id,
+            'userID' => $id,
         ]);
     }
 
@@ -96,16 +109,16 @@ class GuardianController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'firstName'   => 'required|string|max:100',
-            'middleName'  => 'nullable|string|max:100',
-            'lastName'    => 'required|string|max:100',
-            'email'       => 'required|email|max:200',
+            'firstName' => 'required|string|max:100',
+            'middleName' => 'nullable|string|max:100',
+            'lastName' => 'required|string|max:100',
+            'email' => 'required|email|max:200',
             'phoneNumber' => 'nullable|string|max:30',
-            'address'     => 'nullable|string|max:255',
-            'password'    => 'nullable|string|min:6|confirmed',
+            'address' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:6|confirmed',
         ]);
 
-        $all      = $this->db->fetch('users');
+        $all = $this->db->fetch('users');
         $existing = $all->firstWhere('docID', $id);
 
         $password = $request->filled('password')
@@ -113,19 +126,19 @@ class GuardianController extends Controller
             : ($existing['password'] ?? '');
 
         $this->db->edit('users', $id, [
-            'firstName'      => $request->firstName,
-            'middleName'     => $request->middleName ?? '',
-            'lastName'       => $request->lastName,
-            'email'          => $request->email,
-            'phoneNumber'    => $request->phoneNumber ?? '',
-            'address'        => $request->address ?? '',
-            'userType'       => 3,
-            'password'       => $password,
+            'firstName' => $request->firstName,
+            'middleName' => $request->middleName ?? '',
+            'lastName' => $request->lastName,
+            'email' => $request->email,
+            'phoneNumber' => $request->phoneNumber ?? '',
+            'address' => $request->address ?? '',
+            'userType' => 3,
+            'password' => $password,
             'registeredDate' => $existing['registeredDate'] ?? now()->toDateString(),
         ]);
 
         return redirect()->route('guardians.index')
-                         ->with('success', 'Guardian updated successfully.');
+            ->with('success', 'Guardian updated successfully.');
     }
 
     // -------------------------------------------------------------------------
@@ -137,6 +150,6 @@ class GuardianController extends Controller
         $this->db->destroy('users', $id);
 
         return redirect()->route('guardians.index')
-                         ->with('success', 'Guardian deleted successfully.');
+            ->with('success', 'Guardian deleted successfully.');
     }
 }

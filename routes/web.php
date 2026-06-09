@@ -11,7 +11,13 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', function () {
+    if(session()->has('admin')) {
+        return redirect()->route('dashboard');
+    } else {
+        return view('welcome');
+    }
+});
 
 Route::get('/login',  [AuthController::class,  'showLogin'])->name('login');
 Route::post('/login', [LoginController::class,  'store']);

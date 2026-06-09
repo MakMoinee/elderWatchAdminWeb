@@ -21,21 +21,33 @@ class CaregiverController extends Controller
 
     public function index()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
         $activities = $this->db->fetch('activity');
-        $patients   = $this->db->fetch('patients');
+        $patients = $this->db->fetch('patients');
 
         // Build patient docID -> full name
         $patientNames = [];
         foreach ($patients as $p) {
-            $patientNames[$p['docID']] = $p['fullName'] ?? trim(($p['firstName'] ?? '') . ' ' . ($p['lastName'] ?? ''));
+            $patientNames[$p['docID']] = $p['fullName'] ?? trim(($p['firstName'] ?? '').' '.($p['lastName'] ?? ''));
         }
 
         // Build caregiverDocID -> [patient names] (unique)
         $caregiverPatientMap = [];
         foreach ($activities as $a) {
             $cid = $a['caregiverID'] ?? '';
-            $pid = $a['patientID']   ?? '';
+            $pid = $a['patientID'] ?? '';
             if ($cid && $pid && isset($patientNames[$pid])) {
                 $caregiverPatientMap[$cid][] = $patientNames[$pid];
             }
@@ -45,8 +57,8 @@ class CaregiverController extends Controller
         }
 
         return view('caregivers.index', [
-            'caregivers'          => $caregivers,
-            'totalCaregivers'     => count($caregivers),
+            'caregivers' => $caregivers,
+            'totalCaregivers' => count($caregivers),
             'caregiverPatientMap' => $caregiverPatientMap,
         ]);
     }
@@ -98,8 +110,21 @@ class CaregiverController extends Controller
 
     public function edit(string $id)
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         // $id is the Firestore document ID (docID), set by FirestoreRepository::fetch()
-        $all      = $this->db->fetch('users');
+        $all = $this->db->fetch('users');
         $existing = $all->firstWhere('docID', $id);
 
         if (! $existing) {
@@ -109,7 +134,7 @@ class CaregiverController extends Controller
         // Pass $userID = $id so the blade can use it in the form action
         return view('caregivers.edit', [
             'caregiver' => $existing,
-            'userID'    => $id,
+            'userID' => $id,
         ]);
     }
 
@@ -119,6 +144,19 @@ class CaregiverController extends Controller
 
     public function update(Request $request, string $id)
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         $request->validate([
             'firstName' => 'required|string|max:100',
             'middleName' => 'nullable|string|max:100',
@@ -130,7 +168,7 @@ class CaregiverController extends Controller
         ]);
 
         // Fetch existing doc to preserve password + registeredDate
-        $all      = $this->db->fetch('users');
+        $all = $this->db->fetch('users');
         $existing = $all->firstWhere('docID', $id);
 
         // Only hash + store a new password if the field was filled

@@ -15,6 +15,17 @@ class DashboardController extends Controller
 
     public function index()
     {
+        if(session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+            return redirect('/login');
+        }
+        
         // Fetch counts from Firestore (userType: 2 = caregiver, 3 = guardian)
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
         $guardians  = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 3);

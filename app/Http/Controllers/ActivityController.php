@@ -20,6 +20,18 @@ class ActivityController extends Controller
 
     public function index()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
         $activities = $this->db->fetch('activity');
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
         $patients   = $this->db->fetch('patients');
@@ -49,6 +61,18 @@ class ActivityController extends Controller
 
     public function create()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
         $patients   = $this->db->fetch('patients');
 
@@ -88,6 +112,19 @@ class ActivityController extends Controller
 
     public function edit(string $id)
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         $all      = $this->db->fetch('activity');
         $activity = $all->firstWhere('docID', $id);
 

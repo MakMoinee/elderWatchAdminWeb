@@ -15,6 +15,19 @@ class AlertController extends Controller
 
     public function index()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         $history    = $this->db->fetch('activity_history');
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
 

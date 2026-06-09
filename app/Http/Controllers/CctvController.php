@@ -20,20 +20,34 @@ class CctvController extends Controller
 
     public function index()
     {
-        $devices    = $this->db->fetch('devices');
+
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
+        $devices = $this->db->fetch('devices');
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
 
         // Build a quick lookup: caregiver docID => caregiver full name
         $caregiverMap = [];
         foreach ($caregivers as $cg) {
-            if (!empty($cg['docID'])) {
-                $name = trim(($cg['firstName'] ?? '') . ' ' . ($cg['lastName'] ?? '')) ?: 'Unknown';
+            if (! empty($cg['docID'])) {
+                $name = trim(($cg['firstName'] ?? '').' '.($cg['lastName'] ?? '')) ?: 'Unknown';
                 $caregiverMap[$cg['docID']] = $name;
             }
         }
 
         return view('cctv.index', [
-            'devices'      => $devices->toArray(),
+            'devices' => $devices->toArray(),
             'totalDevices' => $devices->count(),
             'caregiverMap' => $caregiverMap,
         ]);
@@ -45,6 +59,19 @@ class CctvController extends Controller
 
     public function create()
     {
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
 
         return view('cctv.create', [
@@ -59,27 +86,27 @@ class CctvController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'deviceID'    => 'required|string|max:100',
-            'ip'          => 'required|string|max:100',
-            'username'    => 'required|string|max:100',
-            'password'    => 'required|string|max:255',
-            'status'      => 'required|in:online,offline',
+            'deviceID' => 'required|string|max:100',
+            'ip' => 'required|string|max:100',
+            'username' => 'required|string|max:100',
+            'password' => 'required|string|max:255',
+            'status' => 'required|in:online,offline',
             'caregiverID' => 'nullable|string|max:100',
         ]);
 
         $this->db->create('devices', [
             'deviceID' => $request->deviceID,
-            'ip'       => $request->input('ip'),
+            'ip' => $request->input('ip'),
             'username' => $request->username,
             'password' => $request->password,
-            'status'   => $request->status,
-            'userID'   => $request->caregiverID ?? '',
+            'status' => $request->status,
+            'userID' => $request->caregiverID ?? '',
         ]);
 
         // If a caregiver was linked, write deviceID back to the caregiver record
         if ($request->filled('caregiverID')) {
             $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
-            $caregiver  = collect($caregivers)->firstWhere('docID', $request->caregiverID);
+            $caregiver = collect($caregivers)->firstWhere('docID', $request->caregiverID);
             if ($caregiver) {
                 $this->db->patch('users', $request->caregiverID, [
                     'deviceID' => $request->deviceID,
@@ -88,7 +115,7 @@ class CctvController extends Controller
         }
 
         return redirect()->route('cctv.index')
-                         ->with('success', 'CCTV device added successfully.');
+            ->with('success', 'CCTV device added successfully.');
     }
 
     // -------------------------------------------------------------------------
@@ -97,8 +124,21 @@ class CctvController extends Controller
 
     public function edit(string $id)
     {
-        $all     = $this->db->fetch('devices');
-        $device  = $all->firstWhere('docID', $id);
+        if (session()->has('admin')) {
+            $admin = session()->get('admin');
+            if ($admin->userType != 1) {
+                session()->put('errorLoginUnauthorized', true);
+
+                return redirect('/login');
+            }
+        } else {
+            session()->put('errorLoginUnauthorized', true);
+
+            return redirect('/login');
+        }
+        
+        $all = $this->db->fetch('devices');
+        $device = $all->firstWhere('docID', $id);
 
         if (! $device) {
             abort(404, 'Device not found.');
@@ -110,9 +150,9 @@ class CctvController extends Controller
         $linkedCaregiver = collect($caregivers)->firstWhere('docID', $device['userID'] ?? '');
 
         return view('cctv.edit', [
-            'device'          => $device,
-            'deviceDocID'     => $id,
-            'caregivers'      => $caregivers,
+            'device' => $device,
+            'deviceDocID' => $id,
+            'caregivers' => $caregivers,
             'linkedCaregiver' => $linkedCaregiver,
         ]);
     }
@@ -124,14 +164,14 @@ class CctvController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'ip'          => 'required|string|max:100',
-            'username'    => 'required|string|max:100',
-            'status'      => 'required|in:online,offline',
+            'ip' => 'required|string|max:100',
+            'username' => 'required|string|max:100',
+            'status' => 'required|in:online,offline',
             'caregiverID' => 'nullable|string|max:100',
         ]);
 
         // Fetch current device
-        $all    = $this->db->fetch('devices');
+        $all = $this->db->fetch('devices');
         $device = $all->firstWhere('docID', $id);
         if (! $device) {
             abort(404, 'Device not found.');
@@ -142,16 +182,16 @@ class CctvController extends Controller
             : ($device['password'] ?? '');
 
         $this->db->edit('devices', $id, [
-            'ip'       => $request->input('ip'),
+            'ip' => $request->input('ip'),
             'username' => $request->username,
             'password' => $newPassword,
-            'status'   => $request->status,
-            'userID'   => $request->caregiverID ?? '',
+            'status' => $request->status,
+            'userID' => $request->caregiverID ?? '',
         ]);
 
         // Update caregiver linkage ----------------------------------------
         $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
-        $deviceID   = $device['deviceID'] ?? '';
+        $deviceID = $device['deviceID'] ?? '';
 
         // Clear deviceID from any caregiver previously linked to this device
         foreach ($caregivers as $cg) {
@@ -169,7 +209,7 @@ class CctvController extends Controller
         }
 
         return redirect()->route('cctv.index')
-                         ->with('success', 'CCTV device updated successfully.');
+            ->with('success', 'CCTV device updated successfully.');
     }
 
     // -------------------------------------------------------------------------
@@ -179,10 +219,10 @@ class CctvController extends Controller
     public function destroy(string $id)
     {
         // Unlink patient before deleting
-        $all    = $this->db->fetch('devices');
+        $all = $this->db->fetch('devices');
         $device = $all->firstWhere('docID', $id);
 
-        if ($device && !empty($device['deviceID'])) {
+        if ($device && ! empty($device['deviceID'])) {
             $caregivers = $this->db->fetchWithWhere('users', 'userType', '=', intValue: 2);
             foreach ($caregivers as $cg) {
                 if (($cg['deviceID'] ?? '') === $device['deviceID']) {
@@ -194,6 +234,6 @@ class CctvController extends Controller
         $this->db->destroy('devices', $id);
 
         return redirect()->route('cctv.index')
-                         ->with('success', 'CCTV device deleted successfully.');
+            ->with('success', 'CCTV device deleted successfully.');
     }
 }
