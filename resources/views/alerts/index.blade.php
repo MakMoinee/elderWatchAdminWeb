@@ -472,6 +472,8 @@
             var img       = document.getElementById('modalImage');
             var noImg     = document.getElementById('modalNoImage');
             var pathLabel = document.getElementById('modalImagePath');
+            if (!img || !noImg || !pathLabel) return;
+
             var resolved  = resolveImagePath(rawPath);
 
             if (resolved) {
