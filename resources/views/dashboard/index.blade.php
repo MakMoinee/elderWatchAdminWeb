@@ -172,18 +172,18 @@
                 {{-- Right actions --}}
                 <div class="flex items-center gap-3">
                     {{-- Alert bell --}}
-                    <button class="relative text-gray-400 hover:text-gray-700 transition-colors">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <a href="{{ route('alerts.index') }}"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200
+                               text-gray-500 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4 {{ $alertCount > 0 ? 'text-red-500' : '' }}" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
-                        @if ($alertCount > 0)
-                            <span
-                                class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                                {{ $alertCount > 9 ? '9+' : $alertCount }}
-                            </span>
-                        @endif
-                    </button>
+                        <span class="text-sm font-semibold {{ $alertCount > 0 ? 'text-red-500' : 'text-gray-400' }}">
+                            {{ $alertCount > 99 ? '99+' : $alertCount }}
+                        </span>
+                    </a>
 
                     {{-- Avatar --}}
                     <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
@@ -289,52 +289,48 @@
                     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">
                             <h3 class="text-sm font-semibold text-gray-900">Recent Incident Reports</h3>
-                            @if (Route::has('reports.index'))
-                                <a href="{{ route('reports.index') }}"
+                            @if (Route::has('alerts.index'))
+                                <a href="{{ route('alerts.index') }}"
                                     class="text-xs text-blue-600 font-medium hover:text-blue-700 transition-colors">
                                     View all →
                                 </a>
                             @endif
                         </div>
 
-                        @if (count($recentReports) > 0)
+                        @if (count($recentAlerts) > 0)
                             <div class="divide-y divide-gray-50">
-                                @foreach ($recentReports as $report)
-                                    <div class="flex items-start gap-4 px-6 py-4">
-                                        {{-- Severity dot --}}
-                                        <div class="mt-1 shrink-0">
-                                            @php
-                                                $severity = strtolower($report['severity'] ?? 'low');
-                                                $dotColor = match ($severity) {
-                                                    'high' => 'bg-red-500',
-                                                    'medium' => 'bg-yellow-400',
-                                                    default => 'bg-green-400',
-                                                };
-                                            @endphp
-                                            <span class="block w-2 h-2 rounded-full {{ $dotColor }}"></span>
-                                        </div>
+                                @foreach ($recentAlerts as $alert)
+                                    @php
+                                        $status = $alert['status'];
+                                        [$dotColor, $badgeClass, $badgeLabel] = match ($status) {
+                                            'alert'    => ['bg-red-500',   'bg-red-50 text-red-600',    'Alert'],
+                                            'verified' => ['bg-blue-500',  'bg-blue-50 text-blue-700',  'Verified'],
+                                            'normal'   => ['bg-green-400', 'bg-green-50 text-green-700','Normal'],
+                                            default    => ['bg-gray-400',  'bg-gray-100 text-gray-600', ucfirst($status)],
+                                        };
+                                    @endphp
+                                    <div class="flex items-center gap-4 px-6 py-3.5">
+                                        {{-- Status dot --}}
+                                        <span class="shrink-0 w-2 h-2 rounded-full {{ $dotColor }}
+                                            {{ $status === 'alert' ? 'animate-pulse' : '' }}"></span>
+
+                                        {{-- Info --}}
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium text-gray-900 truncate">
-                                                {{ $report['patientName'] ?? 'Unknown Patient' }}
+                                                {{ $alert['caregiverName'] }}
                                             </p>
-                                            <p class="text-xs text-gray-500 mt-0.5 truncate">
-                                                {{ $report['description'] ?? 'Incident detected' }}
+                                            <p class="text-xs text-gray-400 mt-0.5 font-mono truncate">
+                                                {{ $alert['ip'] }}
                                             </p>
                                         </div>
+
+                                        {{-- Badge + time --}}
                                         <div class="shrink-0 text-right">
-                                            @php
-                                                $badgeClass = match ($severity) {
-                                                    'high' => 'bg-red-50 text-red-600',
-                                                    'medium' => 'bg-yellow-50 text-yellow-700',
-                                                    default => 'bg-green-50 text-green-700',
-                                                };
-                                            @endphp
-                                            <span
-                                                class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full {{ $badgeClass }}">
-                                                {{ ucfirst($severity) }}
+                                            <span class="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full {{ $badgeClass }}">
+                                                {{ $badgeLabel }}
                                             </span>
-                                            <p class="text-xs text-gray-400 mt-1">
-                                                {{ $report['date'] ?? '—' }}
+                                            <p class="text-xs text-gray-400 mt-1" title="{{ $alert['timestamp'] }}">
+                                                {{ $alert['timeAgo'] }}
                                             </p>
                                         </div>
                                     </div>
@@ -346,10 +342,10 @@
                                     <svg class="w-6 h-6 text-gray-300" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                 </div>
-                                <p class="text-sm text-gray-400">No incident reports yet</p>
+                                <p class="text-sm text-gray-400">No incidents recorded yet</p>
                             </div>
                         @endif
                     </div>
