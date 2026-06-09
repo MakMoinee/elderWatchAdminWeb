@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,7 +47,7 @@ Route::middleware('auth.admin')->group(function () {
     // Alerts — read-only (system-generated from activity_history)
     Route::get('/alerts', [AlertController::class, 'index'])->name('alerts.index');
 
-    // Placeholders — to be replaced as modules are built
-    Route::get('/reports',  fn () => abort(404))->name('reports.index');
+    // Reports / analytics
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 });
