@@ -374,7 +374,8 @@
 
     {{-- Image preview modal --}}
     <div id="imageModal"
-        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+        style="background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);">
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-lg w-full">
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <p class="font-semibold text-gray-900 text-sm">Activity Image</p>
