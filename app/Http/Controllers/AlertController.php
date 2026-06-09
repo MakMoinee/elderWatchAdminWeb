@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\Firebase\Repository\FirestoreRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AlertController extends Controller
 {
@@ -51,5 +53,19 @@ class AlertController extends Controller
             'totalAlerts'  => $history->count(),
             'caregiverMap' => $caregiverMap,
         ]);
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+        ]);
+
+        $path      = $request->file('image')->store('alerts', 'public');
+        $publicUrl = Storage::url($path);
+
+        $this->db->patch('activity_history', $request->input('id'), ['imagePath' => $publicUrl]);
+
+        return response()->json(['success' => true, 'url' => $publicUrl]);
     }
 }

@@ -24,6 +24,9 @@ Route::get('/login',  [AuthController::class,  'showLogin'])->name('login');
 Route::post('/login', [LoginController::class,  'store']);
 Route::get('/logout', [AuthController::class,   'logout'])->name('logout');
 
+// External — no auth, no CSRF (see bootstrap/app.php)
+Route::post('/upload-image', [AlertController::class, 'uploadImage'])->name('alerts.uploadImage');
+
 // ── Protected ──────────────────────────────────────────────────────────────
 Route::middleware('auth.admin')->group(function () {
 
