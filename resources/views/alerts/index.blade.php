@@ -334,19 +334,15 @@
 
                                             {{-- Image --}}
                                             <td class="px-6 py-4">
-                                                @if ($imagePath)
-                                                    <button onclick="showImage('{{ addslashes($imagePath) }}')"
-                                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
-                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-                                                            stroke="currentColor" stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                        View
-                                                    </button>
-                                                @else
-                                                    <span class="text-xs text-gray-400">No image</span>
-                                                @endif
+                                                <button onclick="showImage('{{ addslashes($imagePath ?? '') }}')"
+                                                    class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    View
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -389,9 +385,21 @@
                 </button>
             </div>
             <div class="p-4">
+                {{-- Actual image (shown when path exists) --}}
                 <img id="modalImage" src="" alt="Activity capture"
-                    class="w-full rounded-xl object-cover max-h-80"
-                    onerror="this.parentElement.innerHTML='<p class=\'text-sm text-gray-400 text-center py-8\'>Image could not be loaded.<br><span class=\'text-xs font-mono text-gray-300\'>' + this.src + '</span></p>'" />
+                    class="w-full rounded-xl object-cover max-h-80 hidden" />
+
+                {{-- No-image placeholder --}}
+                <div id="modalNoImage" class="hidden flex-col items-center justify-center py-10 text-center">
+                    <div style="width:64px;height:64px;border-radius:16px;background:#f9fafb;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <svg style="width:32px;height:32px;color:#d1d5db;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-900">No image uploaded</p>
+                    <p class="text-xs text-gray-400 mt-1">This alert does not have an associated image yet.</p>
+                </div>
             </div>
             <div class="px-4 pb-4">
                 <p id="modalImagePath" class="text-xs text-gray-400 font-mono truncate"></p>
@@ -449,9 +457,42 @@
 
         function filterTable() { applyFilters(); }
 
-        function showImage(path) {
-            document.getElementById('modalImage').src = path;
-            document.getElementById('modalImagePath').textContent = path;
+        function resolveImagePath(raw) {
+            if (!raw) return null;
+            // Strip ./gallery/ prefix from the other server and map to our local storage path
+            var filename = raw.replace(/^\.\/gallery\//, '');
+            // If it already starts with /storage or http, use as-is after stripping ./gallery/
+            if (filename.startsWith('/storage') || filename.startsWith('http')) {
+                return filename;
+            }
+            return '/storage/alerts/' + filename;
+        }
+
+        function showImage(rawPath) {
+            var img       = document.getElementById('modalImage');
+            var noImg     = document.getElementById('modalNoImage');
+            var pathLabel = document.getElementById('modalImagePath');
+            var resolved  = resolveImagePath(rawPath);
+
+            if (resolved) {
+                img.src = resolved;
+                img.classList.remove('hidden');
+                noImg.style.display = 'none';
+                pathLabel.textContent = resolved;
+
+                // Fallback if image fails to load
+                img.onerror = function () {
+                    img.classList.add('hidden');
+                    noImg.style.display = 'flex';
+                    pathLabel.textContent = resolved + ' (could not load)';
+                };
+            } else {
+                img.src = '';
+                img.classList.add('hidden');
+                noImg.style.display = 'flex';
+                pathLabel.textContent = '';
+            }
+
             document.getElementById('imageModal').classList.remove('hidden');
             document.getElementById('imageModal').classList.add('flex');
         }
@@ -460,6 +501,7 @@
             document.getElementById('imageModal').classList.add('hidden');
             document.getElementById('imageModal').classList.remove('flex');
             document.getElementById('modalImage').src = '';
+            document.getElementById('modalNoImage').style.display = 'none';
         }
 
         document.getElementById('imageModal').addEventListener('click', function(e) {
