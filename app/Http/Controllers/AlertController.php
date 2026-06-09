@@ -61,7 +61,8 @@ class AlertController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
-        $path      = $request->file('image')->store('alerts', 'public');
+        $file      = $request->file('image');
+        $path      = $file->storeAs('alerts', $file->getClientOriginalName(), 'public');
         $publicUrl = Storage::url($path);
 
         $this->db->patch('activity_history', $request->input('id'), ['imagePath' => $publicUrl]);
