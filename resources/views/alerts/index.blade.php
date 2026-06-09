@@ -388,7 +388,8 @@
             <div class="p-4">
                 {{-- Actual image (shown when path exists) --}}
                 <img id="modalImage" src="" alt="Activity capture"
-                    class="w-full rounded-xl object-cover max-h-80 hidden" />
+                    class="hidden"
+                    style="width:100%;height:320px;object-fit:contain;border-radius:12px;background:#f3f4f6;" />
 
                 {{-- No-image placeholder --}}
                 <div id="modalNoImage" class="hidden flex-col items-center justify-center py-10 text-center">
